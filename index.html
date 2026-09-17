@@ -23,6 +23,14 @@
             position: relative;
             isolation: isolate;
             color: var(--text-color) !important;
+            margin: 0;
+            padding: 20px 30px;
+            overflow-x: hidden;
+            user-select: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body::before {
@@ -88,73 +96,210 @@
             100% { transform: translate3d(-5%, 9%, 0) scale(1.05) rotate(-14deg); }
         }
 
+        .age-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.08em;
+            color: #fff7ec;
+            background: radial-gradient(circle at 30% 30%, #ff9a3d, #ff7a00 42%, #a54000 100%);
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 18px rgba(255, 122, 0, 0.7), 0 0 28px rgba(184, 76, 255, 0.45);
+            text-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
+        }
+
+        .age-badge .plus {
+            font-size: 1.05rem;
+            margin-left: 1px;
+            vertical-align: top;
+        }
+
         header, .menu-container {
             position: relative;
             z-index: 1;
         }
 
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 122, 0, 0.45);
+        }
+
         h1 {
-            color: var(--title-color) !important;
-            text-shadow: 0 0 15px rgba(255, 122, 0, 0.65), 0 0 28px rgba(184, 76, 255, 0.35) !important;
+            font-size: 3rem;
+            margin: 0 0 5px 0;
+            color: var(--title-color);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px rgba(255, 122, 0, 0.65), 0 0 28px rgba(184, 76, 255, 0.35);
         }
 
         .subtitle {
-            color: #c68cff !important;
+            font-size: 1.2rem;
+            color: #c68cff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
         }
 
-        header {
-            border-bottom-color: rgba(255, 122, 0, 0.45) !important;
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            width: 100%;
+            margin: 0 auto;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 1600px) {
+            .menu-container { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 1000px) {
+            .menu-container { grid-template-columns: repeat(2, 1fr); }
         }
 
         .brand-section {
-            background: var(--card-bg) !important;
-            border-color: rgba(184, 76, 255, 0.48) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75), 0 0 14px rgba(184, 76, 255, 0.08) !important;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 12px 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75), 0 0 14px rgba(184, 76, 255, 0.08);
+            border: 1px solid rgba(184, 76, 255, 0.48);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
             backdrop-filter: blur(5px);
         }
 
         .brand-header {
-            border-bottom-color: rgba(255, 122, 0, 0.58) !important;
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid rgba(255, 122, 0, 0.58);
         }
 
         .brand-title {
-            color: var(--accent-color) !important;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            margin: 0 0 3px 0;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            position: relative;
+            padding-right: 24px;
             text-shadow: 0 0 10px rgba(255, 122, 0, 0.3);
         }
 
         .brand-title::after {
-            color: var(--price-color) !important;
+            content: '+';
+            position: absolute;
+            right: 0;
+            color: var(--price-color);
+            font-size: 1.3rem;
+            line-height: 1;
+            transition: transform 0.3s ease;
         }
 
-        .brand-meta, .status-dot {
-            color: var(--price-color) !important;
+        .brand-title[aria-expanded="true"]::after {
+            transform: rotate(45deg);
+        }
+
+        .brand-meta {
+            font-size: 0.85rem;
+            color: var(--price-color);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .flavor-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.4s ease;
+        }
+
+        .flavor-list.is-expanded {
+            max-height: var(--flavor-list-height, 2000px);
+            opacity: 1;
+            margin-top: 5px;
         }
 
         .flavor-item {
-            background: rgba(184, 76, 255, 0.08) !important;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 6px 8px;
+            background: rgba(184, 76, 255, 0.08);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
         }
 
         .flavor-item:hover {
-            background: rgba(255, 122, 0, 0.16) !important;
-            border-color: rgba(57, 255, 136, 0.55) !important;
+            background: rgba(255, 122, 0, 0.16);
+            border-color: rgba(57, 255, 136, 0.55);
         }
 
-        .status-dot {
-            background-color: var(--price-color) !important;
-            box-shadow: 0 0 6px var(--price-color) !important;
+        .flavor-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 5px;
+            flex-grow: 1;
         }
 
         .flavor-item.out-of-stock {
             color: #a975b7 !important;
+            background: rgba(255, 42, 95, 0.03);
         }
 
         .flavor-item.out-of-stock::after {
-            background-color: var(--sold-out-color) !important;
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: var(--sold-out-color);
+            transform: translateY(-50%);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--price-color);
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px var(--price-color);
         }
 
         .out-of-stock .status-dot {
-            background-color: var(--sold-out-color) !important;
-            box-shadow: 0 0 6px var(--sold-out-color) !important;
+            background-color: var(--sold-out-color);
+            box-shadow: 0 0 6px var(--sold-out-color);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -163,44 +308,540 @@
     </style>
 </head>
 <body>
+    <div class="age-badge" aria-label="21 and over">21<span class="plus">+</span></div>
+
     <div class="smoke-layer" aria-hidden="true">
         <span class="smoke smoke-orange"></span>
         <span class="smoke smoke-purple"></span>
         <span class="smoke smoke-green"></span>
     </div>
 
-    <main id="menu-content" aria-live="polite">
-        Loading menu…
-    </main>
+    <header>
+        <h1>Anytime Smoke and Vape</h1>
+        <div class="subtitle">Digital Menu Board</div>
+    </header>
+
+    <div class="menu-container">
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Fifty Bar</div>
+                <div class="brand-meta">$25 • 20k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Aloe Grapple Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Apple Cronut</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Biberry Cereal Dnt Mlk</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Poundcake</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Butter Bean</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Chocolate Creme</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cinnamon Funnel Cake</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cookie Butter</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Milky Loops</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mint Burst</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Cobbler</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Peach Ringz</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Southern Tobacco</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Shortcake</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Swedish</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sweet Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Vanilla Custard</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Cherry Slushie</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Flair Ultra</div>
+                <div class="brand-meta">$15 • 2.5k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Banana Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Berry Bomb</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Black Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blackberry Blueberry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Cotton Candy</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Cola</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Lemon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Rasp</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Straz</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear Freeze</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Grape Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Guava Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Green Apple Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Guava Melon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Ice Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Jolly Juice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Menthol</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Orange Passionfruit Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Frost</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pink Lemonade</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Rasp Peach Lime</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Red Apple</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Smooth Tobacco</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Splash Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Guava Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Kiwi</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Lemon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Milkshake</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Shortcake</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Mint</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Flex Freeze</div>
+                <div class="brand-meta">$40 • 50k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Lemon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Bomb</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Meta Moon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mexican Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Rich Tobacco</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Apple</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Fab</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Banana</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Chew</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Peach Raspberry</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Geek Bar Pulse</div>
+                <div class="brand-meta">$25 • 15k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">B-Burst</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Dragon Melon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Drop Sour Savers</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen White Grape</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">OMG B-Burst</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Orange Mint Savers</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Apple B-Burst</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Watermelon Drop</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Savers</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Pulse X2</div>
+                <div class="brand-meta">$35 • 50k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Banana Taffy Freeze</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Bull</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Jam</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Berry Bull</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pink &amp; Blue</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Fucking Fab</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Straws</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Peach Raspberry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Wild Cherry Slush</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Geek Mate Kit</div>
+                <div class="brand-meta">$35 • 60k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Juicy Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Banana</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Geek Mate Pods</div>
+                <div class="brand-meta">$25 • 60k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Juicy Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sky Blue Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Apple Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Banana</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Triple Berry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Lava Click Kit</div>
+                <div class="brand-meta">$30 • 30k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Raz</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Chill Menthol</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Fruit Blast</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Fucking Fab</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Ice Grape</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Jolly Rancher Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mexican Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Mngo WaterM</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Spearmint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sunrise</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Gummy Ice</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Lava Click Pods</div>
+                <div class="brand-meta">$20 • 30k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Black Mamba</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Raz</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Chill Menthol</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Fruit Blast</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Fucking Fab</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Ice Grape</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Jolly Rancher Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mexican Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Mngo WaterM</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Spearmint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sunrise</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Gummy Ice</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Lava Plus</div>
+                <div class="brand-meta">$15 • 2.6k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Apple Peach Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Apple Honey</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Banana</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Banana Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Banana Milkshake</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Berry Mist</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Black Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Bloom</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Rasp Lemon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Banana</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Dragon Flume</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Fruit Blast</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Grape Soda</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Grapefruit Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Havana Tobacco</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Ice Grape</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Jolly Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Lemon w/ Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Melon Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Orange Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Passionfruit Orange Guava</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Mango Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Solo Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Patch</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Apple Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Spearmint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">StrawB WaterM BubbleG</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Lemon W/ Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Quake</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Vanilla Custard</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Lava 0% Nic</div>
+                <div class="brand-meta">$12 • 2.6k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear Freeze</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Fruit Blast</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Ice Grape</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Jolly Rancher Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mango Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Ice</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Lost Mary Turbo</div>
+                <div class="brand-meta">$35 • 35k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Berry Burst</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Black Extraction Fruit Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blackberry Blueberry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Black Raz Lemon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Lemonade</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Kiwi Passionfruit</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pineapple Lime</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pink Lemonade</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Rocket Freeze</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawmelon Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Summer Grape</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sunny Orange</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Tigers Blood</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Lost Mary VIZ</div>
+                <div class="brand-meta">$40 • 55k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blackberry Chill</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">FAB</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mexican Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Watermelon Apple</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Kiwi</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Raz LTX</div>
+                <div class="brand-meta">$30 • 25k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Bangin' Sour Berries</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Black Cherry Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Code White</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Gush</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Raz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Punch</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen Juicy Strawberry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Georgia Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Raspberry Limeade</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Peach Gush</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Triple Berry Punch</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Grape Gush</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Raz Vue Kit</div>
+                <div class="brand-meta">$35 • 50k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pineapple Mt.Dew</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Apple Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Blast</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Triple Berry Lime</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Gummy</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Raz Vue Pods</div>
+                <div class="brand-meta">$25 • 50k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Yummy</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Raz Gummy</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Raz Peach Gummy</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Raz Strawberry Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Hawaiian Punch</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pineapple MTN Dew</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Raspberry Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Apple Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Blast</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Triple Berry Lime</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Gummy</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">TYN</div>
+                <div class="brand-meta">$35 • 50k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Gush</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Clear 3%</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Georgia Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Menthol</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mexican Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Blow Pop</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Tobacco</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Tobacco 3%</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Tyson</div>
+                <div class="brand-meta">$30 • 30k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Apple MelonBerry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">B-Burst</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blackberry B-Burst</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cherry Bomb</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Effin' Fab</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen Blueberry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen Banana</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen Grape</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen Peach</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Frozen Strawberry</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Green Apple</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Menthol</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pineapple Kiwi</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Kiwi</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Banana</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Tobacco</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Gummy</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">White Peach Raspberry</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-header">
+                <div class="brand-title">Unc 0% Nic</div>
+                <div class="brand-meta">$12 • 2.7k Puffs</div>
+            </div>
+            <ul class="flavor-list">
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Apple Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Black Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Carolina Chill</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Mint</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Fucking fab</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Grape Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blue Razz</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Mango Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Mango</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Peach Mango Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Skittlez</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Banana</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Ice</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Strawberry Watermelon</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Blue Razz</span><span class="status-dot"></span></li>
+            </ul>
+        </div>
+    </div>
 
     <script>
-        const legacyMenuUrl = 'https://raw.githubusercontent.com/egcaptaingibbs-bit/Vapelist/5c902da2b37a28b645bb3afc4bd625513f8f7876/index.html';
+        document.querySelectorAll('.brand-title').forEach((brandTitle) => {
+            const brandSection = brandTitle.closest('.brand-section');
+            const flavorList = brandSection.querySelector('.flavor-list');
 
-        fetch(legacyMenuUrl)
-            .then((response) => {
-                if (!response.ok) throw new Error(`Menu request failed: ${response.status}`);
-                return response.text();
-            })
-            .then((source) => {
-                const legacyDocument = new DOMParser().parseFromString(source, 'text/html');
-                document.title = legacyDocument.title;
+            const controlId = `brand-flavors-${Math.random().toString(36).slice(2)}`;
+            flavorList.id = controlId;
+            brandTitle.setAttribute('role', 'button');
+            brandTitle.setAttribute('tabindex', '0');
+            brandTitle.setAttribute('aria-expanded', 'false');
+            brandTitle.setAttribute('aria-controls', controlId);
 
-                const legacyStyles = legacyDocument.querySelector('style');
-                if (legacyStyles) document.head.appendChild(legacyStyles.cloneNode(true));
+            const toggleBrand = () => {
+                const wasExpanded = brandTitle.getAttribute('aria-expanded') === 'true';
 
-                const content = document.getElementById('menu-content');
-                content.replaceWith(...Array.from(legacyDocument.body.children).filter((element) => !element.matches('script')));
-
-                legacyDocument.body.querySelectorAll('script').forEach((legacyScript) => {
-                    const script = document.createElement('script');
-                    script.textContent = legacyScript.textContent;
-                    document.body.appendChild(script);
+                document.querySelectorAll('.brand-title').forEach((title) => {
+                    const list = title.closest('.brand-section').querySelector('.flavor-list');
+                    title.setAttribute('aria-expanded', 'false');
+                    list.classList.remove('is-expanded');
                 });
-            })
-            .catch((error) => {
-                document.getElementById('menu-content').textContent = 'The menu could not be loaded. Please refresh the page.';
-                console.error(error);
+
+                const shouldExpand = !wasExpanded;
+                if (shouldExpand) {
+                    flavorList.classList.add('is-expanded');
+                    flavorList.style.setProperty('--flavor-list-height', `${flavorList.scrollHeight}px`);
+                    brandTitle.setAttribute('aria-expanded', 'true');
+                } else {
+                    brandTitle.setAttribute('aria-expanded', 'false');
+                }
+            };
+
+            brandTitle.addEventListener('click', toggleBrand);
+
+            brandTitle.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggleBrand();
+                }
             });
+        });
+
+        function toggleStock(element) {
+            element.classList.toggle('out-of-stock');
+        }
     </script>
 </body>
 </html>
