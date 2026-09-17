@@ -12,7 +12,7 @@
 <body>
     <script>
         const EDITOR_SOURCE = 'https://raw.githubusercontent.com/egcaptaingibbs-bit/Vapelist/2e3695a26cb4b01d6ab91f2e9f052b918bbab063/index.html';
-        const EDITOR_PIN = '2468';
+        const EDITOR_PIN = '0013';
         let allowingEditClick = false;
 
         fetch(EDITOR_SOURCE)
@@ -60,7 +60,6 @@
 
                     const enteredPin = window.prompt('Enter the 4-digit editor PIN:');
                     if (enteredPin === EDITOR_PIN) {
-                        // Do not persist authorization: entering editing mode always requires the PIN.
                         status.textContent = 'Editor unlocked. PIN will be required again next time.';
                         allowingEditClick = true;
                         try {
