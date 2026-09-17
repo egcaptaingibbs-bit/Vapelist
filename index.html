@@ -732,14 +732,22 @@
             const toggleBrand = () => {
                 const isExpanded = brandTitle.getAttribute('aria-expanded') === 'true';
 
+                if (isExpanded) {
+                    updateBrandState(false);
+                    return;
+                }
+
                 document.querySelectorAll('.brand-section').forEach((section) => {
                     const otherTitle = section.querySelector('.brand-title');
                     const otherList = section.querySelector('.flavor-list');
-                    otherList.classList.remove('is-expanded');
-                    otherTitle.setAttribute('aria-expanded', 'false');
+
+                    if (otherTitle !== brandTitle) {
+                        otherList.classList.remove('is-expanded');
+                        otherTitle.setAttribute('aria-expanded', 'false');
+                    }
                 });
 
-                updateBrandState(!isExpanded);
+                updateBrandState(true);
             };
 
             brandTitle.addEventListener('click', toggleBrand);
