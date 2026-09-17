@@ -100,6 +100,23 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            cursor: pointer;
+            position: relative;
+            padding-right: 24px;
+        }
+
+        .brand-title::after {
+            content: '+';
+            position: absolute;
+            right: 0;
+            color: var(--price-color);
+            font-size: 1.3rem;
+            line-height: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-title[aria-expanded="true"]::after {
+            transform: rotate(45deg);
         }
 
         .brand-meta {
@@ -116,6 +133,16 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.4s ease;
+        }
+
+        .flavor-list.is-expanded {
+            max-height: var(--flavor-list-height, 2000px);
+            opacity: 1;
+            margin-top: 5px;
         }
 
         .flavor-item {
@@ -616,7 +643,6 @@
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Tobacco</span><span class="status-dot"></span></li>
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Tobacco 3%</span><span class="status-dot"></span></li>
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
-                
             </ul>
         </div>
 
@@ -684,6 +710,35 @@
     </div>
 
     <script>
+        document.querySelectorAll('.brand-title').forEach((brandTitle) => {
+            const brandSection = brandTitle.closest('.brand-section');
+            const flavorList = brandSection.querySelector('.flavor-list');
+
+            const controlId = `brand-flavors-${Math.random().toString(36).slice(2)}`;
+            flavorList.id = controlId;
+            brandTitle.setAttribute('role', 'button');
+            brandTitle.setAttribute('tabindex', '0');
+            brandTitle.setAttribute('aria-expanded', 'false');
+            brandTitle.setAttribute('aria-controls', controlId);
+
+            const toggleBrand = () => {
+                const isExpanded = flavorList.classList.toggle('is-expanded');
+                if (isExpanded) {
+                    flavorList.style.setProperty('--flavor-list-height', `${flavorList.scrollHeight}px`);
+                }
+                brandTitle.setAttribute('aria-expanded', String(isExpanded));
+            };
+
+            brandTitle.addEventListener('click', toggleBrand);
+
+            brandTitle.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggleBrand();
+                }
+            });
+        });
+
         function toggleStock(element) {
             element.classList.toggle('out-of-stock');
         }
