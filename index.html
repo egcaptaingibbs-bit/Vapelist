@@ -5,278 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anytime Smoke and Vape Menu</title>
     <style>
-        :root {
-            --bg-color: #000000;
-            --card-bg: #12101a;
-            --text-color: #e8dff0;
-            --title-color: #ffffff;
-            --accent-color: #ff7a00;
-            --sold-out-color: #b84cff;
-            --price-color: #39ff88;
-        }
-
-        * { box-sizing: border-box; }
-
-        html, body { background: #000000; }
-
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px 30px;
-            overflow-x: hidden;
-            user-select: none;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 122, 0, 0.45);
-        }
-
-        h1 {
-            font-size: 3rem;
-            margin: 0 0 5px;
-            color: var(--title-color);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px rgba(255, 122, 0, 0.65), 0 0 28px rgba(184, 76, 255, 0.35);
-        }
-
-        .subtitle { font-size: 1.2rem; color: #c68cff; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
-
-        .menu-container {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            width: 100%;
-            margin: 0 auto;
-            flex-grow: 1;
-        }
-
-        @media (max-width: 1600px) { .menu-container { grid-template-columns: repeat(4, 1fr); } }
-        @media (max-width: 1000px) { .menu-container { grid-template-columns: repeat(2, 1fr); } }
-
-        .brand-section {
-            background: rgba(18, 16, 26, 0.94);
-            border-radius: 10px;
-            padding: 12px 14px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75);
-            border: 1px solid rgba(184, 76, 255, 0.48);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-
-        .brand-header { text-align: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid rgba(255, 122, 0, 0.58); }
-        .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--accent-color); text-transform: uppercase; margin: 0 0 3px; letter-spacing: .5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; position: relative; padding-right: 24px; }
-        .brand-title::after { content: '+'; position: absolute; right: 0; color: var(--price-color); font-size: 1.3rem; line-height: 1; transition: transform .3s ease; }
-        .brand-title[aria-expanded="true"]::after { transform: rotate(45deg); }
-        .brand-meta { font-size: .85rem; color: var(--price-color); font-weight: 600; margin: 0; }
-        .flavor-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; max-height: 0; overflow: hidden; opacity: 0; transition: max-height .4s ease, opacity .3s ease, margin-top .4s ease; }
-        .flavor-list.is-expanded { max-height: var(--flavor-list-height, 2000px); opacity: 1; margin-top: 5px; }
-        .flavor-item { font-size: .85rem; font-weight: 500; padding: 6px 8px; background: rgba(184, 76, 255, .08); border-radius: 4px; cursor: pointer; position: relative; transition: all .15s ease; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
-        .flavor-item:hover { background: rgba(255, 122, 0, .16); border-color: rgba(57, 255, 136, .55); }
-        .flavor-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 5px; flex-grow: 1; }
-        .flavor-item.out-of-stock { color: #a975b7 !important; background: rgba(255, 42, 95, .03); }
-        .flavor-item.out-of-stock::after { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 2px; background: var(--sold-out-color); transform: translateY(-50%); }
-        .status-dot { width: 6px; height: 6px; background: var(--price-color); border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px var(--price-color); }
-        .out-of-stock .status-dot { background: var(--sold-out-color); box-shadow: 0 0 6px var(--sold-out-color); }
-
-        .age-badge { position: fixed; top: 20px; right: 20px; z-index: 20; display: flex; align-items: center; justify-content: center; width: 62px; height: 62px; border-radius: 50%; font-size: 1.8rem; font-weight: 900; letter-spacing: -.08em; color: #fff7ec; background: radial-gradient(circle at 30% 30%, #ff9a3d, #ff7a00 42%, #a54000 100%); border: 3px solid rgba(255,255,255,.7); box-shadow: 0 0 18px rgba(255,122,0,.7), 0 0 28px rgba(184,76,255,.45); }
-        .age-badge .plus { font-size: 1.05rem; margin-left: 1px; vertical-align: top; }
-
-        #editor-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 0 auto 16px; width: 100%; max-width: 100%; }
-        #editor-toolbar button, .editor-button { border: 1px solid var(--price-color); border-radius: 6px; padding: 8px 12px; color: #06110a; background: var(--price-color); font-weight: 800; cursor: pointer; }
-        #editor-toolbar button.secondary, .editor-button.secondary { color: #fff; background: #332044; border-color: var(--sold-out-color); }
-        #editor-status { color: #c68cff; font-size: .9rem; margin-left: 4px; }
-        .editor-controls { display: none; gap: 5px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
-        body.editing .editor-controls { display: flex; }
-        body.editing .brand-title, body.editing .brand-meta { cursor: text; outline: 1px dashed rgba(57,255,136,.7); outline-offset: 2px; }
-        .editor-button { font-size: .72rem; padding: 5px 7px; }
-        .editor-button.delete { background: #4a173d; color: #fff; border-color: var(--sold-out-color); }
-
-        @media (max-width: 600px) {
-            body { padding: 14px; }
-            h1 { font-size: 2rem; }
-            .age-badge { top: 12px; right: 12px; width: 50px; height: 50px; font-size: 1.45rem; }
-            #editor-toolbar { margin-top: 58px; }
-        }
+        html, body { background: #000000 !important; }
+        #pin-status { color: #c68cff; font: 0.9rem 'Segoe UI', sans-serif; }
     </style>
 </head>
 <body>
-    <div class="age-badge" aria-label="21 and over">21<span class="plus">+</span></div>
-    <header>
-        <h1>Anytime Smoke and Vape</h1>
-        <div class="subtitle">Digital Menu Board</div>
-    </header>
-    <div id="editor-toolbar" aria-label="Menu editor">
-        <button id="edit-menu-button" type="button">Edit Menu</button>
-        <button id="add-brand-button" class="secondary" type="button" hidden>Add Brand</button>
-        <button id="save-menu-button" type="button" hidden>Save Changes</button>
-        <button id="reset-menu-button" class="secondary" type="button" hidden>Reset Menu</button>
-        <span id="editor-status" role="status">Changes are saved in this browser only.</span>
-    </div>
-    <div class="menu-container"></div>
-
     <script>
-        const SOURCE_URL = 'https://raw.githubusercontent.com/egcaptaingibbs-bit/Vapelist/644f44056279cfa6c7488d0663f956146e8b56fb/index.html';
-        const STORAGE_KEY = 'vapelist-menu-html-v1';
-        const menu = document.querySelector('.menu-container');
-        const toolbar = document.getElementById('editor-toolbar');
-        const status = document.getElementById('editor-status');
-        const savedMenu = localStorage.getItem(STORAGE_KEY);
+        const EDITOR_SOURCE = 'https://raw.githubusercontent.com/egcaptaingibbs-bit/Vapelist/2e3695a26cb4b01d6ab91f2e9f052b918bbab063/index.html';
+        const EDITOR_PIN = '2468';
+        const UNLOCK_KEY = 'vapelist-editor-unlocked';
 
-        function installMenu(html) {
-            menu.innerHTML = html;
-            initialiseBrands();
-            addEditorControls();
-        }
+        fetch(EDITOR_SOURCE)
+            .then((response) => {
+                if (!response.ok) throw new Error(`Menu request failed: ${response.status}`);
+                return response.text();
+            })
+            .then((source) => {
+                const parsed = new DOMParser().parseFromString(source, 'text/html');
 
-        function initialiseBrands() {
-            document.querySelectorAll('.brand-title').forEach((brandTitle) => {
-                const section = brandTitle.closest('.brand-section');
-                const list = section.querySelector('.flavor-list');
-                const controlId = `brand-flavors-${Math.random().toString(36).slice(2)}`;
-                list.id = controlId;
-                brandTitle.setAttribute('role', 'button');
-                brandTitle.setAttribute('tabindex', '0');
-                brandTitle.setAttribute('aria-expanded', 'false');
-                brandTitle.setAttribute('aria-controls', controlId);
-
-                const toggle = () => {
-                    const wasOpen = brandTitle.getAttribute('aria-expanded') === 'true';
-                    document.querySelectorAll('.brand-title').forEach((otherTitle) => {
-                        const otherList = otherTitle.closest('.brand-section').querySelector('.flavor-list');
-                        otherTitle.setAttribute('aria-expanded', 'false');
-                        otherList.classList.remove('is-expanded');
-                    });
-                    if (!wasOpen) {
-                        list.classList.add('is-expanded');
-                        list.style.setProperty('--flavor-list-height', `${list.scrollHeight}px`);
-                        brandTitle.setAttribute('aria-expanded', 'true');
-                    }
-                };
-                brandTitle.addEventListener('click', toggle);
-                brandTitle.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
+                parsed.querySelectorAll('style').forEach((style) => {
+                    document.head.appendChild(style.cloneNode(true));
                 });
+
+                const smokeLayer = parsed.querySelector('.smoke-layer');
+                if (smokeLayer) smokeLayer.remove();
+
+                const bodyElements = Array.from(parsed.body.children).filter((element) => !element.matches('script'));
+                document.body.replaceChildren(...bodyElements);
+
+                parsed.body.querySelectorAll('script').forEach((legacyScript) => {
+                    const script = document.createElement('script');
+                    script.textContent = legacyScript.textContent;
+                    document.body.appendChild(script);
+                });
+
+                const style = document.createElement('style');
+                style.textContent = `
+                    body::before, .smoke-layer, .smoke { display: none !important; }
+                    html, body { background: #000000 !important; }
+                `;
+                document.head.appendChild(style);
+
+                const status = document.createElement('span');
+                status.id = 'pin-status';
+                status.textContent = 'Editing is PIN protected.';
+                document.getElementById('editor-toolbar')?.appendChild(status);
+
+                document.addEventListener('click', (event) => {
+                    const editButton = event.target.closest('#edit-menu-button');
+                    if (!editButton || sessionStorage.getItem(UNLOCK_KEY) === 'true') return;
+
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+
+                    const enteredPin = window.prompt('Enter the 4-digit editor PIN:');
+                    if (enteredPin === EDITOR_PIN) {
+                        sessionStorage.setItem(UNLOCK_KEY, 'true');
+                        status.textContent = 'Editor unlocked for this browser tab.';
+                        editButton.click();
+                    } else if (enteredPin !== null) {
+                        status.textContent = 'Incorrect PIN. Editing remains locked.';
+                        window.alert('Incorrect PIN.');
+                    }
+                }, true);
+            })
+            .catch((error) => {
+                document.body.textContent = 'The menu could not be loaded. Please refresh the page.';
+                console.error(error);
             });
-        }
-
-        function addEditorControls() {
-            document.querySelectorAll('.brand-section').forEach((section) => {
-                if (section.querySelector('.editor-controls')) return;
-                const controls = document.createElement('div');
-                controls.className = 'editor-controls';
-                controls.innerHTML = `
-                    <button class="editor-button rename-brand" type="button">Rename Brand</button>
-                    <button class="editor-button add-flavor" type="button">Add Flavor</button>
-                    <button class="editor-button delete-brand" type="button">Delete Brand</button>`;
-                section.appendChild(controls);
-            });
-        }
-
-        function saveMenu() {
-            localStorage.setItem(STORAGE_KEY, menu.innerHTML);
-            status.textContent = 'Saved on this device.';
-        }
-
-        function promptRequired(message, initial = '') {
-            const value = window.prompt(message, initial);
-            return value && value.trim() ? value.trim() : null;
-        }
-
-        document.getElementById('edit-menu-button').addEventListener('click', () => {
-            const editing = document.body.classList.toggle('editing');
-            document.getElementById('edit-menu-button').textContent = editing ? 'Done Editing' : 'Edit Menu';
-            ['add-brand-button', 'save-menu-button', 'reset-menu-button'].forEach((id) => {
-                document.getElementById(id).hidden = !editing;
-            });
-            status.textContent = editing ? 'Edit mode: changes are local until you save.' : 'Changes are saved in this browser only.';
-        });
-
-        document.getElementById('add-brand-button').addEventListener('click', () => {
-            const name = promptRequired('Brand name:');
-            if (!name) return;
-            const details = promptRequired('Brand details, for example $25 • 20k Puffs:', '$');
-            if (!details) return;
-            const section = document.createElement('div');
-            section.className = 'brand-section';
-            section.innerHTML = `<div class="brand-header"><div class="brand-title">${escapeHtml(name)}</div><div class="brand-meta">${escapeHtml(details)}</div></div><ul class="flavor-list"></ul>`;
-            menu.appendChild(section);
-            initialiseBrands();
-            addEditorControls();
-        });
-
-        document.getElementById('save-menu-button').addEventListener('click', saveMenu);
-
-        document.getElementById('reset-menu-button').addEventListener('click', () => {
-            if (!confirm('Reset this browser to the original menu?')) return;
-            localStorage.removeItem(STORAGE_KEY);
-            location.reload();
-        });
-
-        toolbar.addEventListener('click', (event) => {
-            const button = event.target.closest('.editor-button');
-            if (!button) return;
-            const section = button.closest('.brand-section');
-            if (!section) return;
-
-            if (button.classList.contains('rename-brand')) {
-                const title = section.querySelector('.brand-title');
-                const meta = section.querySelector('.brand-meta');
-                const newTitle = promptRequired('Brand name:', title.textContent);
-                if (newTitle) title.textContent = newTitle;
-                const newMeta = promptRequired('Brand details:', meta.textContent);
-                if (newMeta) meta.textContent = newMeta;
-            }
-
-            if (button.classList.contains('add-flavor')) {
-                const flavor = promptRequired('Flavor name:');
-                if (!flavor) return;
-                const item = document.createElement('li');
-                item.className = 'flavor-item';
-                item.setAttribute('onclick', 'toggleStock(this)');
-                item.innerHTML = `<span class="flavor-name">${escapeHtml(flavor)}</span><span class="status-dot"></span>`;
-                section.querySelector('.flavor-list').appendChild(item);
-            }
-
-            if (button.classList.contains('delete-brand')) {
-                if (confirm(`Delete ${section.querySelector('.brand-title').textContent}?`)) section.remove();
-            }
-        });
-
-        menu.addEventListener('click', (event) => {
-            if (!document.body.classList.contains('editing')) return;
-            const flavorItem = event.target.closest('.flavor-item');
-            if (!flavorItem || event.target.closest('.editor-controls')) return;
-            event.stopPropagation();
-            if (!confirm(`Delete flavor "${flavorItem.querySelector('.flavor-name').textContent}"?`)) return;
-            flavorItem.remove();
-        }, true);
-
-        function escapeHtml(value) {
-            return value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
-        }
-
-        function toggleStock(element) { element.classList.toggle('out-of-stock'); }
-
-        if (savedMenu) {
-            installMenu(savedMenu);
-        } else {
-            fetch(SOURCE_URL)
-                .then((response) => { if (!response.ok) throw new Error('Menu request failed'); return response.text(); })
-                .then((source) => {
-                    const parsed = new DOMParser().parseFromString(source, 'text/html');
-                    installMenu(parsed.querySelector('.menu-container').innerHTML);
-                })
-                .catch((error) => { menu.textContent = 'The menu could not be loaded. Please refresh the page.'; console.error(error); });
-        }
     </script>
 </body>
 </html>
