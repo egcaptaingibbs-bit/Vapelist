@@ -13,7 +13,7 @@
     <script>
         const EDITOR_SOURCE = 'https://raw.githubusercontent.com/egcaptaingibbs-bit/Vapelist/2e3695a26cb4b01d6ab91f2e9f052b918bbab063/index.html';
         const EDITOR_PIN = '2468';
-        const UNLOCK_KEY = 'vapelist-editor-unlocked';
+        let allowingEditClick = false;
 
         fetch(EDITOR_SOURCE)
             .then((response) => {
@@ -53,16 +53,21 @@
 
                 document.addEventListener('click', (event) => {
                     const editButton = event.target.closest('#edit-menu-button');
-                    if (!editButton || sessionStorage.getItem(UNLOCK_KEY) === 'true') return;
+                    if (!editButton || allowingEditClick) return;
 
                     event.preventDefault();
                     event.stopImmediatePropagation();
 
                     const enteredPin = window.prompt('Enter the 4-digit editor PIN:');
                     if (enteredPin === EDITOR_PIN) {
-                        sessionStorage.setItem(UNLOCK_KEY, 'true');
-                        status.textContent = 'Editor unlocked for this browser tab.';
-                        editButton.click();
+                        // Do not persist authorization: entering editing mode always requires the PIN.
+                        status.textContent = 'Editor unlocked. PIN will be required again next time.';
+                        allowingEditClick = true;
+                        try {
+                            editButton.click();
+                        } finally {
+                            allowingEditClick = false;
+                        }
                     } else if (enteredPin !== null) {
                         status.textContent = 'Incorrect PIN. Editing remains locked.';
                         window.alert('Incorrect PIN.');
