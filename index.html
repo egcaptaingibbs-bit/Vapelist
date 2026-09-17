@@ -350,7 +350,7 @@
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Blueberry Jam</span><span class="status-dot"></span></li>
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Cool Berry Bull</span><span class="status-dot"></span></li>
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Miami Mint</span><span class="status-dot"></span></li>
-                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pink & Blue</span><span class="status-dot"></span></li>
+                <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Pink &amp; Blue</span><span class="status-dot"></span></li>
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Fucking Fab</span><span class="status-dot"></span></li>
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Sour Straws</span><span class="status-dot"></span></li>
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Ice</span><span class="status-dot"></span></li>
@@ -706,7 +706,7 @@
                 <li class="flavor-item" onclick="toggleStock(this)"><span class="flavor-name">Watermelon Blue Razz</span><span class="status-dot"></span></li>
             </ul>
         </div>
- 
+  
     </div>
 
     <script>
@@ -721,12 +721,25 @@
             brandTitle.setAttribute('aria-expanded', 'false');
             brandTitle.setAttribute('aria-controls', controlId);
 
-            const toggleBrand = () => {
-                const isExpanded = flavorList.classList.toggle('is-expanded');
-                if (isExpanded) {
+            const updateBrandState = (shouldExpand) => {
+                flavorList.classList.toggle('is-expanded', shouldExpand);
+                if (shouldExpand) {
                     flavorList.style.setProperty('--flavor-list-height', `${flavorList.scrollHeight}px`);
                 }
-                brandTitle.setAttribute('aria-expanded', String(isExpanded));
+                brandTitle.setAttribute('aria-expanded', String(shouldExpand));
+            };
+
+            const toggleBrand = () => {
+                const isExpanded = brandTitle.getAttribute('aria-expanded') === 'true';
+
+                document.querySelectorAll('.brand-section').forEach((section) => {
+                    const otherTitle = section.querySelector('.brand-title');
+                    const otherList = section.querySelector('.flavor-list');
+                    otherList.classList.remove('is-expanded');
+                    otherTitle.setAttribute('aria-expanded', 'false');
+                });
+
+                updateBrandState(!isExpanded);
             };
 
             brandTitle.addEventListener('click', toggleBrand);
