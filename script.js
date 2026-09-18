@@ -6,8 +6,10 @@
     'use strict';
 
     const EDIT_PIN = '0013';
+    const STOCK_STORAGE_KEY = 'vapelist-stock-state-v1';
     const menu = document.querySelector('.menu-container');
     const editButton = document.getElementById('edit-menu-button');
+    const toolbar = document.getElementById('editor-toolbar');
     const status = document.getElementById('editor-status');
 
     if (!menu) return;
@@ -50,6 +52,63 @@
         }[character]));
     }
 
+    function getStockState() {
+        try {
+            return JSON.parse(localStorage.getItem(STOCK_STORAGE_KEY) || '{}');
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function saveStockState() {
+        const stockState = {};
+        menu.querySelectorAll('.flavor-item').forEach((item) => {
+            const brandName = item.closest('.brand-section')?.querySelector('.brand-title')?.textContent.trim();
+            const flavorName = item.querySelector('.flavor-name')?.textContent.trim();
+            if (!brandName || !flavorName) return;
+            stockState[`${brandName}::${flavorName}`] = item.classList.contains('out-of-stock');
+        });
+        localStorage.setItem(STOCK_STORAGE_KEY, JSON.stringify(stockState));
+    }
+
+    function setAllStockStatus(outOfStock) {
+        menu.querySelectorAll('.flavor-item').forEach((item) => {
+            item.classList.toggle('out-of-stock', outOfStock);
+        });
+        saveStockState();
+        setStatus(outOfStock ? 'All flavors marked out of stock.' : 'All flavors restored to in stock.');
+    }
+
+    function addStockControls() {
+        if (!toolbar || toolbar.querySelector('.stock-controls')) return;
+
+        const controls = document.createElement('span');
+        controls.className = 'stock-controls';
+        controls.hidden = true;
+        controls.innerHTML = `
+            <button class="secondary stock-control" data-stock-action="restore" type="button">Restore All In Stock</button>
+            <button class="secondary stock-control" data-stock-action="sold-out" type="button">Mark All Sold Out</button>`;
+        toolbar.insertBefore(controls, status);
+
+        controls.addEventListener('click', (event) => {
+            const button = event.target.closest('.stock-control');
+            if (!button || !document.body.classList.contains('editing')) return;
+
+            const markSoldOut = button.dataset.stockAction === 'sold-out';
+            const message = markSoldOut
+                ? 'Mark every flavor as out of stock?'
+                : 'Restore every flavor to in stock?';
+            if (!window.confirm(message)) return;
+
+            setAllStockStatus(markSoldOut);
+        });
+    }
+
+    function syncStockControlsVisibility() {
+        const controls = toolbar?.querySelector('.stock-controls');
+        if (controls) controls.hidden = !document.body.classList.contains('editing');
+    }
+
     function renameBrand(section) {
         const title = section.querySelector('.brand-title');
         const meta = section.querySelector('.brand-meta');
@@ -64,6 +123,7 @@
 
         title.textContent = newName;
         meta.textContent = details;
+        saveStockState();
         setStatus(`Updated brand: ${newName}`);
     }
 
@@ -77,11 +137,10 @@
         const item = document.createElement('li');
         item.className = 'flavor-item';
         item.innerHTML = `<span class="flavor-name">${escapeHtml(flavor)}</span><span class="status-dot"></span>`;
-        // New flavors must use the same stock toggle as flavors loaded with the menu.
-        item.addEventListener('click', () => item.classList.toggle('out-of-stock'));
         list.appendChild(item);
         list.classList.add('is-expanded');
         list.style.setProperty('--flavor-list-height', `${list.scrollHeight}px`);
+        saveStockState();
         setStatus(`Added flavor: ${flavor}`);
     }
 
@@ -90,6 +149,7 @@
         if (!window.confirm(`Delete ${name}?`)) return;
 
         section.remove();
+        saveStockState();
         setStatus(`Deleted brand: ${name}`);
     }
 
@@ -103,5 +163,15 @@
         if (button.classList.contains('rename-brand')) renameBrand(section);
         if (button.classList.contains('add-flavor')) addFlavor(section);
         if (button.classList.contains('delete-brand')) deleteBrand(section);
+    });
+
+    addStockControls();
+    syncStockControlsVisibility();
+
+    // The main editor toggle lives in index.html. Observe its class change so the
+    // stock controls are only visible while the PIN-protected editing mode is active.
+    new MutationObserver(syncStockControlsVisibility).observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
     });
 })();
