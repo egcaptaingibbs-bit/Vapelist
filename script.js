@@ -77,6 +77,8 @@
         const item = document.createElement('li');
         item.className = 'flavor-item';
         item.innerHTML = `<span class="flavor-name">${escapeHtml(flavor)}</span><span class="status-dot"></span>`;
+        // New flavors must use the same stock toggle as flavors loaded with the menu.
+        item.addEventListener('click', () => item.classList.toggle('out-of-stock'));
         list.appendChild(item);
         list.classList.add('is-expanded');
         list.style.setProperty('--flavor-list-height', `${list.scrollHeight}px`);
