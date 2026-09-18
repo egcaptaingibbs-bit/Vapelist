@@ -124,15 +124,71 @@
     <script>
         const SOURCE_URL = 'https://raw.githubusercontent.com/egcaptaingibbs-bit/Vapelist/644f44056279cfa6c7488d0663f956146e8b56fb/index.html';
         const STORAGE_KEY = 'vapelist-menu-html-v1';
+        const STOCK_STORAGE_KEY = 'vapelist-stock-state-v1';
         const menu = document.querySelector('.menu-container');
         const toolbar = document.getElementById('editor-toolbar');
         const status = document.getElementById('editor-status');
         const savedMenu = localStorage.getItem(STORAGE_KEY);
 
+        function getStockState() {
+            try {
+                return JSON.parse(localStorage.getItem(STOCK_STORAGE_KEY) || '{}');
+            } catch (error) {
+                return {};
+            }
+        }
+
+        function saveStockState() {
+            const stockState = {};
+            document.querySelectorAll('.flavor-item').forEach((item) => {
+                const brandName = item.closest('.brand-section')?.querySelector('.brand-title')?.textContent.trim();
+                const flavorName = item.querySelector('.flavor-name')?.textContent.trim();
+                if (!brandName || !flavorName) return;
+                stockState[`${brandName}::${flavorName}`] = item.classList.contains('out-of-stock');
+            });
+            localStorage.setItem(STOCK_STORAGE_KEY, JSON.stringify(stockState));
+        }
+
+        function restoreStockState() {
+            const stockState = getStockState();
+            document.querySelectorAll('.flavor-item').forEach((item) => {
+                const brandName = item.closest('.brand-section')?.querySelector('.brand-title')?.textContent.trim();
+                const flavorName = item.querySelector('.flavor-name')?.textContent.trim();
+                if (!brandName || !flavorName) return;
+                const key = `${brandName}::${flavorName}`;
+                item.classList.toggle('out-of-stock', Boolean(stockState[key]));
+            });
+        }
+
+        function rekeyStockState(oldBrandName, newBrandName) {
+            if (!oldBrandName || !newBrandName || oldBrandName === newBrandName) return;
+            const stockState = getStockState();
+            const updatedState = {};
+            Object.entries(stockState).forEach(([key, value]) => {
+                const [brandName, flavorName] = key.split('::');
+                if (brandName === oldBrandName) {
+                    updatedState[`${newBrandName}::${flavorName}`] = value;
+                } else {
+                    updatedState[key] = value;
+                }
+            });
+            localStorage.setItem(STOCK_STORAGE_KEY, JSON.stringify(updatedState));
+        }
+
+        function removeStockStateForBrand(brandName) {
+            if (!brandName) return;
+            const stockState = getStockState();
+            Object.keys(stockState).forEach((key) => {
+                if (key.startsWith(`${brandName}::`)) delete stockState[key];
+            });
+            localStorage.setItem(STOCK_STORAGE_KEY, JSON.stringify(stockState));
+        }
+
         function installMenu(html) {
             menu.innerHTML = html;
             initialiseBrands();
             addEditorControls();
+            restoreStockState();
         }
 
         function initialiseBrands() {
@@ -181,6 +237,7 @@
 
         function saveMenu() {
             localStorage.setItem(STORAGE_KEY, menu.innerHTML);
+            saveStockState();
             status.textContent = 'Saved on this device.';
         }
 
@@ -215,7 +272,10 @@
             const currentName = title.textContent.trim();
             const currentMeta = meta.textContent.trim();
             const newTitle = promptRequired('Brand name:', currentName);
-            if (newTitle) title.textContent = newTitle;
+            if (newTitle) {
+                rekeyStockState(currentName, newTitle);
+                title.textContent = newTitle;
+            }
             const newMeta = promptRequired('Brand details:', currentMeta);
             if (newMeta) meta.textContent = newMeta;
             status.textContent = `Updated brand: ${newTitle || currentName}`;
@@ -227,17 +287,18 @@
             const list = section.querySelector('.flavor-list');
             const item = document.createElement('li');
             item.className = 'flavor-item';
-            item.addEventListener('click', () => toggleStock(item));
             item.innerHTML = `<span class="flavor-name">${escapeHtml(flavor)}</span><span class="status-dot"></span>`;
             list.appendChild(item);
             list.classList.add('is-expanded');
             list.style.setProperty('--flavor-list-height', `${list.scrollHeight}px`);
+            saveStockState();
             status.textContent = `Added flavor: ${flavor}`;
         }
 
         function deleteBrand(section) {
             const title = section.querySelector('.brand-title')?.textContent || 'brand';
             if (!confirm(`Delete ${title}?`)) return;
+            removeStockStateForBrand(title.trim());
             section.remove();
             status.textContent = `Deleted brand: ${title}`;
         }
@@ -257,6 +318,7 @@
         document.getElementById('reset-menu-button').addEventListener('click', () => {
             if (!confirm('Reset this browser to the original menu?')) return;
             localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STOCK_STORAGE_KEY);
             location.reload();
         });
 
@@ -280,19 +342,31 @@
         });
 
         menu.addEventListener('click', (event) => {
-            if (!document.body.classList.contains('editing')) return;
             const flavorItem = event.target.closest('.flavor-item');
-            if (!flavorItem || event.target.closest('.editor-controls')) return;
+            if (flavorItem && !document.body.classList.contains('editing')) {
+                event.preventDefault();
+                event.stopPropagation();
+                toggleStock(flavorItem);
+                return;
+            }
+
+            if (!document.body.classList.contains('editing')) return;
+            const deleteItem = event.target.closest('.flavor-item');
+            if (!deleteItem || event.target.closest('.editor-controls')) return;
             event.stopPropagation();
-            if (!confirm(`Delete flavor "${flavorItem.querySelector('.flavor-name').textContent}"?`)) return;
-            flavorItem.remove();
+            if (!confirm(`Delete flavor "${deleteItem.querySelector('.flavor-name').textContent}"?`)) return;
+            deleteItem.remove();
+            saveStockState();
         }, true);
 
         function escapeHtml(value) {
-            return value.replace(/[&<>\'\"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+            return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
         }
 
-        function toggleStock(element) { element.classList.toggle('out-of-stock'); }
+        function toggleStock(element) {
+            element.classList.toggle('out-of-stock');
+            saveStockState();
+        }
 
         if (savedMenu) {
             installMenu(savedMenu);
