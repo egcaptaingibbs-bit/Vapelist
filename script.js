@@ -5,8 +5,12 @@
 (function () {
     'use strict';
 
+    const EDIT_PIN = '0013';
     const menu = document.querySelector('.menu-container');
+    const toolbar = document.getElementById('editor-toolbar');
+    const editButton = document.getElementById('edit-menu-button');
     const status = document.getElementById('editor-status');
+    let editAuthorised = false;
 
     if (!menu) return;
 
@@ -14,6 +18,44 @@
         const value = window.prompt(message, initialValue);
         return value && value.trim() ? value.trim() : null;
     }
+
+    function requestEditAccess() {
+        const enteredPin = window.prompt('Enter the PIN to edit brands and flavors:');
+        if (enteredPin !== EDIT_PIN) {
+            if (status) status.textContent = 'Incorrect PIN. Edit mode was not enabled.';
+            return false;
+        }
+        editAuthorised = true;
+        return true;
+    }
+
+    function setStatus(message) {
+        if (status) status.textContent = message;
+    }
+
+    // Capture the edit button before the page's inline handler can enable edit mode.
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('#edit-menu-button') !== editButton) return;
+
+        if (!document.body.classList.contains('editing')) {
+            if (!requestEditAccess()) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }
+        } else {
+            editAuthorised = false;
+        }
+    }, true);
+
+    // Protect every brand/flavor editing action, including actions added by the inline menu code.
+    document.addEventListener('click', (event) => {
+        const editingAction = event.target.closest('#add-brand-button, #save-menu-button, #reset-menu-button, .editor-button, .flavor-item');
+        if (!editingAction || editAuthorised) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setStatus('Enter the PIN by selecting Edit Menu before making changes.');
+    }, true);
 
     function escapeHtml(value) {
         return String(value).replace(/[&<>\'\"]/g, (character) => ({
@@ -23,10 +65,6 @@
             "'": '&#39;',
             '"': '&quot;'
         }[character]));
-    }
-
-    function setStatus(message) {
-        if (status) status.textContent = message;
     }
 
     function renameBrand(section) {
